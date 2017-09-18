@@ -1,0 +1,32 @@
+#!/bin/env perl
+
+use strict;
+use warnings;
+use Cwd 'abs_path';
+
+## usage:  perl mcpipe.pl FWD.fq REV.fq prefix
+
+my $preprocess = 0;
+my $k = 31;
+my $threads = 38;
+
+## Setup script path
+my $script_dir = abs_path($0);
+$script_dir =~ s/\/mcpipe\.pl//;
+
+## Parse args
+my ($fwd, $rev, $pref) = (shift, shift, shift);
+
+if($preprocess==0){
+    ## SPADES
+    system("spades.py -1 $fwd -2 $rev -t $threads -o $pref-spades");
+}else{
+    ## Musket
+    system("musket -p $threads -inorder -omulti $pref.musket -k $k 536870912 $fwd $rev");
+    system("mv $pref.musket.0 $pref.musket.0.fastq");
+    system("mv $pref.musket.1 $pref.musket.1.fastq");
+    ## Flash pairs
+    system("flash -t $threads -o $pref $pref.musket.0.fastq $pref.musket.1.fastq");
+    ## SPADES
+    system("spades.py -1 $pref.notCombined_1.fastq -2 $pref.notCombined_2.fastq -s $pref.extendedFrags.fastq -t $threads -o $pref-spades");
+}
