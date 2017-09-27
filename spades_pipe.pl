@@ -29,4 +29,6 @@ if($preprocess==0){
     system("flash -t $threads -o $pref $pref.musket.0.fastq $pref.musket.1.fastq");
     ## SPADES
     system("spades.py --pe1-1 $pref.notCombined_1.fastq --pe1-2 $pref.notCombined_2.fastq --s2 $pref.extendedFrags.fastq -t $threads -o $pref-spades");
+    ## Rename
+    system("cp $pref-spades/contigs.fasta ./$pref-spades.fna");
 }
