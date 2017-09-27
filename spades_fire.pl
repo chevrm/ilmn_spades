@@ -6,7 +6,9 @@ use warnings;
 my $pipedir = '~/git/ilmn_spades';
 
 my %p = ();
-my @stage = glob("./src/*.fastq");
+my @stage = (
+    glob("./src/*.fastq")
+);
 foreach my $file (@stage){
     my @p = split(/\// , $file);
     my @u = split(/_+/, $p[-1]);
@@ -20,4 +22,9 @@ foreach my $file (@stage){
 }
 foreach my $s (keys %p){
     system("perl $pipedir/spades_pipe.pl $p{$s}{'left'} $p{$s}{'right'} $s");
+    ## Optional cleanup
+    my @torm = ('*.fastq', '*hist*');
+    foreach(@torm){
+	system("rm $_");
+    }
 }
