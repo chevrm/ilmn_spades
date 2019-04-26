@@ -21,10 +21,12 @@ foreach my $file (@stage){
     }
 }
 foreach my $s (keys %p){
-    system("perl $pipedir/spades_pipe.pl $p{$s}{'left'} $p{$s}{'right'} $s");
-    ## Optional cleanup
-    my @torm = ('*.fastq', '*hist*');
-    foreach(@torm){
-	system("rm $_");
+    unless(-e $s.'-spades.fna'){
+	system("perl $pipedir/spades_pipe.pl $p{$s}{'left'} $p{$s}{'right'} $s");
+	## Optional cleanup
+	my @torm = ('fp*');
+	foreach(@torm){
+	    system("rm $_");
+	}
     }
 }
